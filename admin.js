@@ -8,6 +8,7 @@ const logoutBtn = document.getElementById("logout");
 const eventForm = document.getElementById("event-form");
 const resetBtn = document.getElementById("reset");
 const eventList = document.getElementById("event-list");
+const eventHint = document.getElementById("event-hint");
 
 const setLoginState = (club) => {
   if (club) {
@@ -66,6 +67,7 @@ const renderEvents = (events) => {
 const resetForm = () => {
   eventForm.reset();
   eventForm.elements.id.value = "";
+  if (eventHint) eventHint.textContent = "";
 };
 
 loginForm?.addEventListener("submit", async (event) => {
@@ -95,6 +97,7 @@ resetBtn.addEventListener("click", () => resetForm());
 
 eventForm.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (eventHint) eventHint.textContent = "";
   const formData = new FormData(eventForm);
   const payload = Object.fromEntries(formData.entries());
   const id = payload.id;
@@ -103,13 +106,18 @@ eventForm.addEventListener("submit", async (event) => {
   const method = id ? "PUT" : "POST";
   const path = id ? `/api/events/${id}` : "/api/events";
 
-  await request(path, {
-    method,
-    body: JSON.stringify(payload),
-  });
+  try {
+    await request(path, {
+      method,
+      body: JSON.stringify(payload),
+    });
+    resetForm();
+    await loadEvents();
+    if (eventHint) eventHint.textContent = "Saved.";
+  } catch (error) {
+    if (eventHint) eventHint.textContent = error.message;
+  }
 
-  resetForm();
-  await loadEvents();
 });
 
 eventList.addEventListener("click", async (event) => {
