@@ -12,8 +12,19 @@ const elements = {
   download: document.getElementById("download-calendar"),
 };
 
+const normalizeDateString = (dateString) => {
+  if (!dateString) return dateString;
+  if (dateString.includes("-")) return dateString;
+  const parts = dateString.split("/");
+  if (parts.length !== 3) return dateString;
+  const [day, month, year] = parts.map((part) => part.trim());
+  if (!day || !month || !year) return dateString;
+  return `${year.padStart(4, "0")}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+};
+
 const formatDate = (dateString) => {
-  const date = new Date(`${dateString}T00:00:00`);
+  const normalized = normalizeDateString(dateString);
+  const date = new Date(`${normalized}T00:00:00`);
   return date.toLocaleDateString("en-US", {
     weekday: "short",
     month: "short",
@@ -23,7 +34,8 @@ const formatDate = (dateString) => {
 };
 
 const formatMonth = (dateString) => {
-  const date = new Date(`${dateString}T00:00:00`);
+  const normalized = normalizeDateString(dateString);
+  const date = new Date(`${normalized}T00:00:00`);
   return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 };
 
@@ -163,7 +175,9 @@ const init = async () => {
 
     const events = data
       .map((event) => ({ ...event }))
-      .sort((a, b) => a.date.localeCompare(b.date));
+      .sort((a, b) =>
+        normalizeDateString(a.date).localeCompare(normalizeDateString(b.date))
+      );
 
     populateFilters(events);
     updateNextEvent(events);

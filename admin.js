@@ -6,7 +6,7 @@ const dashboard = document.getElementById("dashboard");
 const clubName = document.getElementById("club-name");
 const logoutBtn = document.getElementById("logout");
 const eventForm = document.getElementById("event-form");
-const resetBtn = document.getElementById("reset");
+const resetBtn = document.getElementById("clear-form");
 const eventList = document.getElementById("event-list");
 const eventHint = document.getElementById("event-hint");
 
@@ -65,9 +65,19 @@ const renderEvents = (events) => {
 };
 
 const resetForm = () => {
-  eventForm.reset();
+  HTMLFormElement.prototype.reset.call(eventForm);
   eventForm.elements.id.value = "";
   if (eventHint) eventHint.textContent = "";
+};
+
+const normalizeDateInput = (value) => {
+  if (!value) return value;
+  if (value.includes("-")) return value;
+  const parts = value.split("/");
+  if (parts.length !== 3) return value;
+  const [day, month, year] = parts.map((part) => part.trim());
+  if (!day || !month || !year) return value;
+  return `${year.padStart(4, "0")}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 };
 
 loginForm?.addEventListener("submit", async (event) => {
@@ -102,6 +112,7 @@ eventForm.addEventListener("submit", async (event) => {
   const payload = Object.fromEntries(formData.entries());
   const id = payload.id;
   delete payload.id;
+  payload.date = normalizeDateInput(payload.date);
 
   const method = id ? "PUT" : "POST";
   const path = id ? `/api/events/${id}` : "/api/events";
