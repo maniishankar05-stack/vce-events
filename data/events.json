@@ -1,0 +1,101 @@
+[
+  {
+    "title": "Fine Arts Club Auditions",
+    "date": "2026-01-28",
+    "time": "2:00 PM onwards",
+    "venue": "SAC",
+    "category": "Auditions",
+    "organizer": "Fine Arts Club",
+    "registration": "#"
+  },
+  {
+    "title": "Smart Manufacturing Workshop",
+    "date": "2026-02-18",
+    "time": "10:00 AM - 3:00 PM",
+    "venue": "Innovation Lab, Block C",
+    "category": "Workshop",
+    "organizer": "Dept. of Mechanical Engineering",
+    "registration": "https://example.com/vce/workshop"
+  },
+  {
+    "title": "Women in Tech Leadership Summit",
+    "date": "2026-02-25",
+    "time": "9:30 AM - 1:00 PM",
+    "venue": "Auditorium A",
+    "category": "Conference",
+    "organizer": "IEEE VCE",
+    "registration": "https://example.com/vce/wit"
+  },
+  {
+    "title": "CodeSprint 48-Hour Hackathon",
+    "date": "2026-03-06",
+    "time": "Friday 5:00 PM - Sunday 5:00 PM",
+    "venue": "Tech Hub, Block D",
+    "category": "Hackathon",
+    "organizer": "CSI Student Chapter",
+    "registration": "https://example.com/vce/codesprint"
+  },
+  {
+    "title": "Research Poster Expo",
+    "date": "2026-03-12",
+    "time": "11:00 AM - 4:00 PM",
+    "venue": "Library Courtyard",
+    "category": "Exhibition",
+    "organizer": "R&D Cell",
+    "registration": "https://example.com/vce/poster"
+  },
+  {
+    "title": "Placement Readiness Bootcamp",
+    "date": "2026-03-20",
+    "time": "9:00 AM - 2:00 PM",
+    "venue": "Placement Cell",
+    "category": "Career",
+    "organizer": "Career Services",
+    "registration": "https://example.com/vce/placement"
+  },
+  {
+    "title": "Green Campus Week",
+    "date": "2026-04-02",
+    "time": "All Day",
+    "venue": "Main Quadrangle",
+    "category": "Community",
+    "organizer": "Eco Club",
+    "registration": "https://example.com/vce/green"
+  },
+  {
+    "title": "AI & Data Science Symposium",
+    "date": "2026-04-15",
+    "time": "10:00 AM - 4:30 PM",
+    "venue": "Seminar Hall 2",
+    "category": "Conference",
+    "organizer": "Dept. of CSE",
+    "registration": "https://example.com/vce/ai"
+  },
+  {
+    "title": "Cultural Night: Prism 2026",
+    "date": "2026-04-25",
+    "time": "6:00 PM - 9:30 PM",
+    "venue": "Open Air Theatre",
+    "category": "Cultural",
+    "organizer": "Student Council",
+    "registration": "https://example.com/vce/prism"
+  },
+  {
+    "title": "Industry Connect: Embedded Systems",
+    "date": "2026-05-07",
+    "time": "2:00 PM - 5:00 PM",
+    "venue": "E-Block Seminar Room",
+    "category": "Talk",
+    "organizer": "ECE Department",
+    "registration": "https://example.com/vce/embedded"
+  },
+  {
+    "title": "Technova 2026",
+    "date": "2026-05-09",
+    "time": "9:00 AM - 6:00 PM",
+    "venue": "Campus Grounds",
+    "category": "Fest",
+    "organizer": "Student Affairs",
+    "registration": "https://example.com/vce/technova"
+  }
+]

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VCE Events Admin</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <main class="admin">
+      <section class="admin-card">
+        <header>
+          <h1>Club Lead Portal</h1>
+          <p>Log in to manage your club's events.</p>
+        </header>
+
+        <form id="login-form" class="form">
+          <label>
+            Username
+            <input type="text" name="username" autocomplete="username" required />
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" autocomplete="current-password" required />
+          </label>
+          <button type="submit">Sign in</button>
+          <p class="hint" id="login-hint"></p>
+        </form>
+
+        <section id="dashboard" class="dashboard hidden">
+          <div class="dashboard-header">
+            <div>
+              <h2 id="club-name">Your Events</h2>
+              <p class="hint">You can edit or delete only your own events.</p>
+            </div>
+            <button id="logout" class="ghost">Logout</button>
+          </div>
+
+          <form id="event-form" class="form">
+            <div class="form-grid">
+              <label>
+                Event Title
+                <input type="text" name="title" required />
+              </label>
+              <label>
+                Date
+                <input type="date" name="date" required />
+              </label>
+              <label>
+                Time
+                <input type="text" name="time" required />
+              </label>
+              <label>
+                Venue
+                <input type="text" name="venue" required />
+              </label>
+              <label>
+                Category
+                <input type="text" name="category" required />
+              </label>
+              <label>
+                Registration Link
+                <input type="url" name="registration" placeholder="https://" />
+              </label>
+            </div>
+            <label>
+              Description
+              <textarea name="description" rows="3" placeholder="Optional"></textarea>
+            </label>
+            <div class="form-actions">
+              <button type="submit">Save Event</button>
+              <button type="button" id="reset" class="ghost">Clear</button>
+            </div>
+            <input type="hidden" name="id" />
+          </form>
+
+          <div id="event-list" class="event-list"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="admin.js"></script>
+  </body>
+</html>

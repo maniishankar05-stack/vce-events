@@ -1,0 +1,144 @@
+:root {
+  --ink: #141414;
+  --muted: #5a5f63;
+  --accent: #ff6a3d;
+  --accent-soft: #ffd5c8;
+  --paper: #ffffff;
+  --shadow: 0 18px 40px rgba(18, 24, 32, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #fff7e8 0%, #f8f1ff 55%, #eef6ff 100%);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+.admin {
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+}
+
+.admin-card {
+  width: min(960px, 100%);
+  background: var(--paper);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: var(--shadow);
+}
+
+header h1 {
+  font-family: "Fraunces", serif;
+  font-size: 2.2rem;
+  margin-bottom: 8px;
+}
+
+header p {
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.form {
+  display: grid;
+  gap: 16px;
+}
+
+.form label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.95rem;
+}
+
+.form input,
+.form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+.form button {
+  background: var(--accent);
+  color: #fff;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid #ddd;
+  padding: 10px 16px;
+  border-radius: 999px;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.dashboard {
+  margin-top: 24px;
+  display: grid;
+  gap: 24px;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.event-list {
+  display: grid;
+  gap: 12px;
+}
+
+.event-item {
+  padding: 16px;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.event-item h3 {
+  font-size: 1.1rem;
+}
+
+.event-item p {
+  color: var(--muted);
+}
+
+.event-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.hidden {
+  display: none;
+}

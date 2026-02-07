@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vardhaman College of Engineering | Upcoming Events</title>
+    <meta
+      name="description"
+      content="Official upcoming events listing for Vardhaman College of Engineering."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="site-header">
+        <div class="brand">
+          <span class="brand-mark">VCE</span>
+          <div>
+            <p class="brand-title">Vardhaman College of Engineering</p>
+            <p class="brand-subtitle">Upcoming Events & Announcements</p>
+          </div>
+        </div>
+        <nav class="site-nav">
+          <a href="#events">Events</a>
+          <a href="#calendar">Calendar</a>
+          <a href="#contact">Contact</a>
+          <a href="admin.html">Admin Login</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div class="hero-content">
+            <p class="eyebrow">Campus Life • 2026</p>
+            <h1>Everything happening next at VCE.</h1>
+            <p class="hero-text">
+              Discover conferences, tech fests, cultural nights, workshops, and
+              placement drives—all in one place. Updated by the student affairs
+              office weekly.
+            </p>
+            <div class="hero-actions">
+              <a class="primary" href="#events">View all events</a>
+              <a class="secondary" href="#calendar">Download calendar</a>
+            </div>
+          </div>
+          <div class="hero-card">
+            <div>
+              <p class="card-label">Next Event</p>
+              <h2 id="next-event-title">Loading…</h2>
+              <p id="next-event-meta" class="card-meta">Please wait</p>
+            </div>
+            <div class="card-footer">
+              <span>Updated</span>
+              <span id="updated-date">—</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="filters" aria-label="Event filters">
+          <div>
+            <label for="search">Search</label>
+            <input id="search" type="search" placeholder="Search by event name" />
+          </div>
+          <div>
+            <label for="category">Category</label>
+            <select id="category">
+              <option value="all">All categories</option>
+            </select>
+          </div>
+          <div>
+            <label for="month">Month</label>
+            <select id="month">
+              <option value="all">All months</option>
+            </select>
+          </div>
+        </section>
+
+        <section id="events" class="events">
+          <div class="section-title">
+            <h2>Upcoming Events</h2>
+            <p>All campus events scheduled for the coming months.</p>
+          </div>
+          <div id="events-grid" class="events-grid" aria-live="polite"></div>
+          <div id="empty-state" class="empty-state hidden">
+            <h3>No events match your filters</h3>
+            <p>Try clearing filters or search for another keyword.</p>
+          </div>
+        </section>
+
+        <section id="calendar" class="calendar">
+          <div class="section-title">
+            <h2>Academic Calendar Snapshot</h2>
+            <p>Key dates and high-traffic weeks to plan ahead.</p>
+          </div>
+          <div class="calendar-grid">
+            <div class="calendar-card">
+              <h3>Mid-Semester Week</h3>
+              <p>March 16–21, 2026</p>
+              <span>Academics</span>
+            </div>
+            <div class="calendar-card">
+              <h3>Placement Sprint</h3>
+              <p>April 6–18, 2026</p>
+              <span>Career Services</span>
+            </div>
+            <div class="calendar-card">
+              <h3>Annual Tech Fest</h3>
+              <p>May 8–10, 2026</p>
+              <span>Student Affairs</span>
+            </div>
+          </div>
+          <button class="secondary" id="download-calendar" type="button">
+            Download .ics (sample)
+          </button>
+        </section>
+      </main>
+
+      <footer id="contact" class="site-footer">
+        <div>
+          <h3>Need to list a new event?</h3>
+          <p>
+            Email the Student Affairs office with event title, date/time, venue,
+            and organizer details.
+          </p>
+        </div>
+        <div class="footer-actions">
+          <p>Student Affairs Office</p>
+          <p>events@vardhaman.edu</p>
+          <p>+91 40 2453 9999</p>
+        </div>
+      </footer>
+    </div>
+
+    <script src="data/events.js"></script>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
