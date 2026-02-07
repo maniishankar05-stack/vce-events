@@ -5,6 +5,7 @@ const cookieSession = require("cookie-session");
 const { pool, init } = require("./db");
 
 const app = express();
+app.set("trust proxy", 1);
 
 const SESSION_SECRET = process.env.SESSION_SECRET || "vce-session-secret";
 const CORS_ORIGIN = process.env.CORS_ORIGIN || "";
@@ -27,11 +28,31 @@ app.use(
     keys: [SESSION_SECRET],
     httpOnly: true,
     sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
     maxAge: 1000 * 60 * 60 * 8,
   })
 );
 
 app.use(express.static(path.join(__dirname, "..")));
+
+const normalizeDateInput = (value) => {
+  if (!value) return value;
+  const trimmed = String(value).trim();
+  if (trimmed.includes("T")) {
+    return trimmed.split("T")[0];
+  }
+  if (trimmed.includes("-")) return trimmed;
+  const parts = trimmed.split("/");
+  if (parts.length !== 3) return trimmed;
+  const [day, month, year] = parts.map((part) => part.trim());
+  if (!day || !month || !year) return trimmed;
+  return `${year.padStart(4, "0")}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+};
+
+const normalizeEventDate = (event) => ({
+  ...event,
+  date: normalizeDateInput(event.date),
+});
 
 const requireAuth = (req, res, next) => {
   if (!req.session.clubId) {
@@ -81,7 +102,7 @@ app.get("/api/events", async (req, res) => {
      JOIN clubs ON clubs.id = events.club_id
      ORDER BY date ASC`
   );
-  res.json(result.rows);
+  res.json(result.rows.map(normalizeEventDate));
 });
 
 app.get("/api/events/mine", requireAuth, async (req, res) => {
@@ -92,7 +113,7 @@ app.get("/api/events/mine", requireAuth, async (req, res) => {
      ORDER BY date ASC`,
     [req.session.clubId]
   );
-  res.json(result.rows);
+  res.json(result.rows.map(normalizeEventDate));
 });
 
 app.post("/api/events", requireAuth, async (req, res) => {
@@ -115,7 +136,7 @@ app.post("/api/events", requireAuth, async (req, res) => {
     [
       club.id,
       title,
-      date,
+      normalizeDateInput(date),
       time,
       venue,
       category,
@@ -142,7 +163,7 @@ app.put("/api/events/:id", requireAuth, async (req, res) => {
 
   const update = {
     title: req.body.title || event.title,
-    date: req.body.date || event.date,
+    date: normalizeDateInput(req.body.date || event.date),
     time: req.body.time || event.time,
     venue: req.body.venue || event.venue,
     category: req.body.category || event.category,

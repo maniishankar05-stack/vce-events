@@ -14,6 +14,8 @@ const elements = {
 
 const normalizeDateString = (dateString) => {
   if (!dateString) return dateString;
+  if (dateString.includes("T")) return dateString.split("T")[0];
+  if (dateString.includes(" ")) return dateString.split(" ")[0];
   if (dateString.includes("-")) return dateString;
   const parts = dateString.split("/");
   if (parts.length !== 3) return dateString;
