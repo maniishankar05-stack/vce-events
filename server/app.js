@@ -37,7 +37,14 @@ app.use(express.static(path.join(__dirname, "..")));
 
 const normalizeDateInput = (value) => {
   if (!value) return value;
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(0, 10);
+  }
   const trimmed = String(value).trim();
+  const parsed = Date.parse(trimmed);
+  if (!Number.isNaN(parsed) && /[a-zA-Z]/.test(trimmed)) {
+    return new Date(parsed).toISOString().slice(0, 10);
+  }
   if (trimmed.includes("T")) {
     return trimmed.split("T")[0];
   }

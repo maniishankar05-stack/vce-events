@@ -97,15 +97,20 @@ loginForm?.addEventListener("submit", async (event) => {
   }
 });
 
-logoutBtn.addEventListener("click", async () => {
-  await request("/api/logout", { method: "POST" });
-  setLoginState(null);
-  resetForm();
-});
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", async () => {
+    await request("/api/logout", { method: "POST" });
+    setLoginState(null);
+    resetForm();
+  });
+}
 
-resetBtn.addEventListener("click", () => resetForm());
+if (resetBtn) {
+  resetBtn.addEventListener("click", () => resetForm());
+}
 
-eventForm.addEventListener("submit", async (event) => {
+if (eventForm) {
+  eventForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (eventHint) eventHint.textContent = "";
   const formData = new FormData(eventForm);
@@ -129,11 +134,15 @@ eventForm.addEventListener("submit", async (event) => {
     if (eventHint) eventHint.textContent = error.message;
   }
 
-});
+  });
+}
 
-eventList.addEventListener("click", async (event) => {
-  const editId = event.target.getAttribute("data-edit");
-  const deleteId = event.target.getAttribute("data-delete");
+if (eventList) {
+  eventList.addEventListener("click", async (event) => {
+  const actionButton = event.target.closest("button");
+  if (!actionButton) return;
+  const editId = actionButton.getAttribute("data-edit");
+  const deleteId = actionButton.getAttribute("data-delete");
 
   if (editId) {
     const events = await request("/api/events/mine");
@@ -148,10 +157,16 @@ eventList.addEventListener("click", async (event) => {
 
   if (deleteId) {
     if (!confirm("Delete this event?")) return;
-    await request(`/api/events/${deleteId}`, { method: "DELETE" });
-    await loadEvents();
+    try {
+      await request(`/api/events/${deleteId}`, { method: "DELETE" });
+      await loadEvents();
+      if (eventHint) eventHint.textContent = "Deleted.";
+    } catch (error) {
+      if (eventHint) eventHint.textContent = error.message;
+    }
   }
-});
+  });
+}
 
 const bootstrap = async () => {
   try {

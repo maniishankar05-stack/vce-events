@@ -14,6 +14,10 @@ const elements = {
 
 const normalizeDateString = (dateString) => {
   if (!dateString) return dateString;
+  const parsed = Date.parse(dateString);
+  if (!Number.isNaN(parsed) && /[a-zA-Z]/.test(dateString)) {
+    return new Date(parsed).toISOString().slice(0, 10);
+  }
   if (dateString.includes("T")) return dateString.split("T")[0];
   if (dateString.includes(" ")) return dateString.split(" ")[0];
   if (dateString.includes("-")) return dateString;
