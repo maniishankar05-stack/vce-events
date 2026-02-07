@@ -30,8 +30,15 @@ const request = async (path, options = {}) => {
   });
 
   if (!response.ok) {
-    const message = await response.json().catch(() => ({ error: "Request failed" }));
-    throw new Error(message.error || "Request failed");
+    let message = "Request failed";
+    try {
+      const data = await response.json();
+      message = data.error || message;
+    } catch (_) {
+      const text = await response.text();
+      if (text) message = text;
+    }
+    throw new Error(`${message} (status ${response.status})`);
   }
 
   return response.json();
