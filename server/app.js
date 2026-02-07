@@ -192,6 +192,10 @@ app.get("/health", (_req, res) => {
   res.json({ ok: true });
 });
 
+app.get("/api/health", (_req, res) => {
+  res.json({ ok: true });
+});
+
 init().catch((error) => {
   console.error("Database init failed", error);
 });
