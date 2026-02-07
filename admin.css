@@ -83,6 +83,11 @@ header p {
   border-radius: 999px;
 }
 
+.danger {
+  border-color: #ffb4a2;
+  color: #b23a25;
+}
+
 .hint {
   color: var(--muted);
   font-size: 0.9rem;

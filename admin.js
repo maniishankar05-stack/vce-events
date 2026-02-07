@@ -7,6 +7,7 @@ const clubName = document.getElementById("club-name");
 const logoutBtn = document.getElementById("logout");
 const eventForm = document.getElementById("event-form");
 const resetBtn = document.getElementById("clear-form");
+const deleteAllBtn = document.getElementById("delete-all");
 const eventList = document.getElementById("event-list");
 const eventHint = document.getElementById("event-hint");
 
@@ -107,6 +108,19 @@ if (logoutBtn) {
 
 if (resetBtn) {
   resetBtn.addEventListener("click", () => resetForm());
+}
+
+if (deleteAllBtn) {
+  deleteAllBtn.addEventListener("click", async () => {
+    if (!confirm("Delete all your events? This cannot be undone.")) return;
+    try {
+      await request("/api/events/mine", { method: "DELETE" });
+      await loadEvents();
+      if (eventHint) eventHint.textContent = "All events deleted.";
+    } catch (error) {
+      if (eventHint) eventHint.textContent = error.message;
+    }
+  });
 }
 
 if (eventForm) {

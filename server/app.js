@@ -123,6 +123,11 @@ app.get("/api/events/mine", requireAuth, async (req, res) => {
   res.json(result.rows.map(normalizeEventDate));
 });
 
+app.delete("/api/events/mine", requireAuth, async (req, res) => {
+  await pool.query("DELETE FROM events WHERE club_id = $1", [req.session.clubId]);
+  res.json({ ok: true });
+});
+
 app.post("/api/events", requireAuth, async (req, res) => {
   const { title, date, time, venue, category, registration, description } = req.body || {};
   if (!title || !date || !time || !venue || !category) {
