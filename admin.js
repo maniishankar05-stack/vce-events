@@ -10,13 +10,25 @@ const resetBtn = document.getElementById("clear-form");
 const deleteAllBtn = document.getElementById("delete-all");
 const eventList = document.getElementById("event-list");
 const eventHint = document.getElementById("event-hint");
+const clubSelectWrap = document.getElementById("club-select-wrap");
+const clubSelect = document.getElementById("club-select");
+let currentUser = null;
 
 const setLoginState = (club) => {
   if (club) {
     clubName.textContent = `${club.name} Events`;
+    currentUser = club;
+    if (club.isSuperadmin) {
+      clubName.textContent = "Super Admin - All Clubs";
+      if (clubSelectWrap) clubSelectWrap.classList.remove("hidden");
+    } else {
+      if (clubSelectWrap) clubSelectWrap.classList.add("hidden");
+    }
     dashboard.classList.remove("hidden");
     loginForm.classList.add("hidden");
   } else {
+    currentUser = null;
+    if (clubSelectWrap) clubSelectWrap.classList.add("hidden");
     dashboard.classList.add("hidden");
     loginForm.classList.remove("hidden");
   }
@@ -31,12 +43,12 @@ const request = async (path, options = {}) => {
 
   if (!response.ok) {
     let message = "Request failed";
+    const raw = await response.text();
     try {
-      const data = await response.json();
+      const data = JSON.parse(raw);
       message = data.error || message;
     } catch (_) {
-      const text = await response.text();
-      if (text) message = text;
+      if (raw) message = raw;
     }
     throw new Error(`${message} (status ${response.status})`);
   }
@@ -47,6 +59,18 @@ const request = async (path, options = {}) => {
 const loadEvents = async () => {
   const events = await request("/api/events/mine");
   renderEvents(events);
+};
+
+const loadClubs = async () => {
+  if (!currentUser?.isSuperadmin || !clubSelect) return;
+  const clubs = await request("/api/clubs");
+  clubSelect.innerHTML = "";
+  clubs.forEach((club) => {
+    const option = document.createElement("option");
+    option.value = club.id;
+    option.textContent = club.name;
+    clubSelect.appendChild(option);
+  });
 };
 
 const renderEvents = (events) => {
@@ -63,6 +87,7 @@ const renderEvents = (events) => {
       <h3>${event.title}</h3>
       <p>${event.date} · ${event.time}</p>
       <p>${event.venue} · ${event.category}</p>
+      ${event.club_name ? `<p class="hint">Club: ${event.club_name}</p>` : ""}
       <div class="event-actions">
         <button class="ghost" data-edit="${event.id}">Edit</button>
         <button class="ghost" data-delete="${event.id}">Delete</button>
@@ -99,6 +124,7 @@ loginForm?.addEventListener("submit", async (event) => {
       body: JSON.stringify(payload),
     });
     setLoginState(response.club);
+    await loadClubs();
     await loadEvents();
   } catch (error) {
     loginHint.textContent = error.message;
@@ -119,11 +145,18 @@ if (resetBtn) {
 
 if (deleteAllBtn) {
   deleteAllBtn.addEventListener("click", async () => {
-    if (!confirm("Delete all your events? This cannot be undone.")) return;
+    const confirmationText = currentUser?.isSuperadmin
+      ? "Delete ALL events across every club? This cannot be undone."
+      : "Delete all your events? This cannot be undone.";
+    if (!confirm(confirmationText)) return;
     try {
       await request("/api/events/mine", { method: "DELETE" });
       await loadEvents();
-      if (eventHint) eventHint.textContent = "All events deleted.";
+      if (eventHint) {
+        eventHint.textContent = currentUser?.isSuperadmin
+          ? "All club events deleted."
+          : "All events deleted.";
+      }
     } catch (error) {
       if (eventHint) eventHint.textContent = error.message;
     }
@@ -139,6 +172,9 @@ if (eventForm) {
   const id = payload.id;
   delete payload.id;
   payload.date = normalizeDateInput(payload.date);
+  if (!currentUser?.isSuperadmin) {
+    delete payload.clubId;
+  }
 
   const method = id ? "PUT" : "POST";
   const path = id ? `/api/events/${id}` : "/api/events";
@@ -194,6 +230,7 @@ const bootstrap = async () => {
     const response = await request("/api/me");
     if (response.club) {
       setLoginState(response.club);
+      await loadClubs();
       await loadEvents();
     }
   } catch (error) {

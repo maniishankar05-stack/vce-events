@@ -79,7 +79,7 @@ app.post("/api/login", async (req, res) => {
   }
 
   const result = await pool.query(
-    "SELECT id, name, username, password_hash FROM clubs WHERE username = $1",
+    "SELECT id, name, username, password_hash, is_superadmin FROM clubs WHERE username = $1",
     [username]
   );
   const club = result.rows[0];
@@ -89,7 +89,15 @@ app.post("/api/login", async (req, res) => {
   }
 
   req.session.clubId = club.id;
-  res.json({ club: { id: club.id, name: club.name, username: club.username } });
+  req.session.isSuperadmin = Boolean(club.is_superadmin);
+  res.json({
+    club: {
+      id: club.id,
+      name: club.name,
+      username: club.username,
+      isSuperadmin: Boolean(club.is_superadmin),
+    },
+  });
 });
 
 app.post("/api/logout", (req, res) => {
@@ -100,10 +108,29 @@ app.post("/api/logout", (req, res) => {
 app.get("/api/me", async (req, res) => {
   if (!req.session.clubId) return res.json({ club: null });
   const result = await pool.query(
-    "SELECT id, name, username FROM clubs WHERE id = $1",
+    "SELECT id, name, username, is_superadmin FROM clubs WHERE id = $1",
     [req.session.clubId]
   );
-  res.json({ club: result.rows[0] || null });
+  const club = result.rows[0];
+  if (!club) return res.json({ club: null });
+  res.json({
+    club: {
+      id: club.id,
+      name: club.name,
+      username: club.username,
+      isSuperadmin: Boolean(club.is_superadmin),
+    },
+  });
+});
+
+app.get("/api/clubs", requireAuth, async (req, res) => {
+  if (!req.session.isSuperadmin) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+  const result = await pool.query(
+    "SELECT id, name FROM clubs WHERE is_superadmin = FALSE ORDER BY name ASC"
+  );
+  res.json(result.rows);
 });
 
 app.get("/api/events", async (req, res) => {
@@ -130,19 +157,31 @@ app.get("/api/gallery", async (_req, res) => {
 
 app.get("/api/events/mine", requireAuth, async (req, res) => {
   await cleanupPastEvents();
-  const result = await pool.query(
-    `SELECT events.*
-     FROM events
-     WHERE club_id = $1
-       AND date >= CURRENT_DATE
-     ORDER BY date ASC`,
-    [req.session.clubId]
-  );
+  const result = req.session.isSuperadmin
+    ? await pool.query(
+      `SELECT events.*, clubs.name as club_name
+       FROM events
+       JOIN clubs ON clubs.id = events.club_id
+       WHERE events.date >= CURRENT_DATE
+       ORDER BY events.date ASC`
+    )
+    : await pool.query(
+      `SELECT events.*
+       FROM events
+       WHERE club_id = $1
+         AND date >= CURRENT_DATE
+       ORDER BY date ASC`,
+      [req.session.clubId]
+    );
   res.json(result.rows.map(normalizeEventDate));
 });
 
 app.delete("/api/events/mine", requireAuth, async (req, res) => {
-  await pool.query("DELETE FROM events WHERE club_id = $1", [req.session.clubId]);
+  if (req.session.isSuperadmin) {
+    await pool.query("DELETE FROM events");
+  } else {
+    await pool.query("DELETE FROM events WHERE club_id = $1", [req.session.clubId]);
+  }
   res.json({ ok: true });
 });
 
@@ -152,11 +191,15 @@ app.post("/api/events", requireAuth, async (req, res) => {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
+  const clubId = req.session.isSuperadmin && req.body.clubId
+    ? Number(req.body.clubId)
+    : req.session.clubId;
   const clubResult = await pool.query(
     "SELECT id, name FROM clubs WHERE id = $1",
-    [req.session.clubId]
+    [clubId]
   );
   const club = clubResult.rows[0];
+  if (!club) return res.status(400).json({ error: "Invalid club" });
 
   const insertResult = await pool.query(
     `INSERT INTO events
@@ -187,7 +230,7 @@ app.put("/api/events/:id", requireAuth, async (req, res) => {
   const event = eventResult.rows[0];
 
   if (!event) return res.status(404).json({ error: "Not found" });
-  if (event.club_id !== req.session.clubId) {
+  if (!req.session.isSuperadmin && event.club_id !== req.session.clubId) {
     return res.status(403).json({ error: "Forbidden" });
   }
 
@@ -231,7 +274,7 @@ app.delete("/api/events/:id", requireAuth, async (req, res) => {
   const event = eventResult.rows[0];
 
   if (!event) return res.status(404).json({ error: "Not found" });
-  if (event.club_id !== req.session.clubId) {
+  if (!req.session.isSuperadmin && event.club_id !== req.session.clubId) {
     return res.status(403).json({ error: "Forbidden" });
   }
 

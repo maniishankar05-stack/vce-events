@@ -58,6 +58,12 @@ const seedClubs = [
   { name: "Team MUN", username: "teammun", password: "MUN!6pX8#sN" },
 ];
 
+const superAdminAccount = {
+  name: "Campus Super Admin",
+  username: "superadmin",
+  password: "VCE@Admin2026!",
+};
+
 const seedGalleryImages = [
   {
     image_url:
@@ -93,10 +99,27 @@ const run = async () => {
     for (const club of seedClubs) {
       const hash = bcrypt.hashSync(club.password, 10);
       await pool.query(
-        "INSERT INTO clubs (name, username, password_hash) VALUES ($1, $2, $3)",
+        "INSERT INTO clubs (name, username, password_hash, is_superadmin) VALUES ($1, $2, $3, FALSE)",
         [club.name, club.username, hash]
       );
     }
+  }
+
+  const superAdminExists = await pool.query(
+    "SELECT id FROM clubs WHERE username = $1",
+    [superAdminAccount.username]
+  );
+  if (!superAdminExists.rows[0]) {
+    const hash = bcrypt.hashSync(superAdminAccount.password, 10);
+    await pool.query(
+      "INSERT INTO clubs (name, username, password_hash, is_superadmin) VALUES ($1, $2, $3, TRUE)",
+      [superAdminAccount.name, superAdminAccount.username, hash]
+    );
+  } else {
+    await pool.query(
+      "UPDATE clubs SET is_superadmin = TRUE WHERE username = $1",
+      [superAdminAccount.username]
+    );
   }
 
   const eventCount = await pool.query("SELECT COUNT(*) FROM events");
