@@ -20,7 +20,11 @@
     <div class="page">
       <header class="site-header">
         <div class="brand">
-          <span class="brand-mark">VCE</span>
+          <img 
+  src="https://vardhaman.org/wp-content/uploads/2021/08/vardhamanlogo.png" 
+  alt="Vardhaman College of Engineering Logo" 
+  class="brand-logo"
+/>
           <div>
             <p class="brand-title">Vardhaman College of Engineering</p>
             <p class="brand-subtitle">Upcoming Events & Announcements</p>
@@ -47,6 +51,14 @@
             <div class="hero-actions">
               <a class="primary" href="#events">View all events</a>
               <a class="secondary" href="#calendar">Download calendar</a>
+            </div>
+            <div class="hero-gallery" aria-label="Campus gallery">
+              <div class="gallery-track" id="gallery-track">
+                <div class="gallery-loading">Loading gallery...</div>
+              </div>
+              <button type="button" id="gallery-prev" class="gallery-nav prev" aria-label="Previous slide">‹</button>
+              <button type="button" id="gallery-next" class="gallery-nav next" aria-label="Next slide">›</button>
+              <div class="gallery-dots" id="gallery-dots" aria-label="Slide indicators"></div>
             </div>
           </div>
           <div class="hero-card">

@@ -58,6 +58,33 @@ const seedClubs = [
   { name: "Team MUN", username: "teammun", password: "MUN!6pX8#sN" },
 ];
 
+const seedGalleryImages = [
+  {
+    image_url:
+      "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80",
+    alt_text: "VCE campus building",
+    sort_order: 1,
+  },
+  {
+    image_url:
+      "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80",
+    alt_text: "Students at campus event",
+    sort_order: 2,
+  },
+  {
+    image_url:
+      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=1200&q=80",
+    alt_text: "College seminar audience",
+    sort_order: 3,
+  },
+  {
+    image_url:
+      "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1200&q=80",
+    alt_text: "Students collaborating outdoors",
+    sort_order: 4,
+  },
+];
+
 const run = async () => {
   await init();
 
@@ -101,6 +128,17 @@ const run = async () => {
           event.registration || "#",
           event.description || null,
         ]
+      );
+    }
+  }
+
+  const galleryCount = await pool.query("SELECT COUNT(*) FROM gallery_images");
+  if (Number(galleryCount.rows[0].count) === 0) {
+    for (const image of seedGalleryImages) {
+      await pool.query(
+        `INSERT INTO gallery_images (image_url, alt_text, sort_order, is_active)
+         VALUES ($1, $2, $3, TRUE)`,
+        [image.image_url, image.alt_text, image.sort_order]
       );
     }
   }

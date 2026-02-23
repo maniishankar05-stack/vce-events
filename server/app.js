@@ -112,6 +112,16 @@ app.get("/api/events", async (req, res) => {
   res.json(result.rows.map(normalizeEventDate));
 });
 
+app.get("/api/gallery", async (_req, res) => {
+  const result = await pool.query(
+    `SELECT id, image_url, alt_text, sort_order
+     FROM gallery_images
+     WHERE is_active = TRUE
+     ORDER BY sort_order ASC, id ASC`
+  );
+  res.json(result.rows);
+});
+
 app.get("/api/events/mine", requireAuth, async (req, res) => {
   const result = await pool.query(
     `SELECT events.*

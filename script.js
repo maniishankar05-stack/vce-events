@@ -1,4 +1,26 @@
 const API_BASE = window.VCE_API_BASE || "";
+const DEFAULT_GALLERY_IMAGES = [
+  {
+    image_url:
+      "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80",
+    alt_text: "VCE campus building",
+  },
+  {
+    image_url:
+      "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80",
+    alt_text: "Students at campus event",
+  },
+  {
+    image_url:
+      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=1200&q=80",
+    alt_text: "College seminar audience",
+  },
+  {
+    image_url:
+      "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=1200&q=80",
+    alt_text: "Students collaborating outdoors",
+  },
+];
 
 const elements = {
   grid: document.getElementById("events-grid"),
@@ -10,6 +32,108 @@ const elements = {
   nextMeta: document.getElementById("next-event-meta"),
   updated: document.getElementById("updated-date"),
   download: document.getElementById("download-calendar"),
+  gallerySlides: Array.from(document.querySelectorAll(".gallery-slide")),
+  galleryPrev: document.getElementById("gallery-prev"),
+  galleryNext: document.getElementById("gallery-next"),
+  galleryDots: document.getElementById("gallery-dots"),
+  galleryTrack: document.getElementById("gallery-track"),
+};
+
+let galleryIndex = 0;
+let galleryTimer = null;
+
+const renderGallery = (index) => {
+  if (!elements.gallerySlides.length) return;
+  galleryIndex = (index + elements.gallerySlides.length) % elements.gallerySlides.length;
+
+  elements.gallerySlides.forEach((slide, slideIndex) => {
+    slide.classList.toggle("active", slideIndex === galleryIndex);
+  });
+
+  if (elements.galleryDots) {
+    const dots = Array.from(elements.galleryDots.querySelectorAll(".gallery-dot"));
+    dots.forEach((dot, dotIndex) => {
+      dot.classList.toggle("active", dotIndex === galleryIndex);
+    });
+  }
+};
+
+const startGallery = () => {
+  if (!elements.gallerySlides.length) return;
+  if (galleryTimer) clearInterval(galleryTimer);
+  galleryTimer = setInterval(() => {
+    renderGallery(galleryIndex + 1);
+  }, 4000);
+};
+
+const initGallery = () => {
+  if (!elements.gallerySlides.length) return;
+
+  if (elements.galleryDots) {
+    elements.galleryDots.innerHTML = "";
+    elements.gallerySlides.forEach((_, index) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "gallery-dot";
+      dot.setAttribute("aria-label", `Go to slide ${index + 1}`);
+      dot.addEventListener("click", () => {
+        renderGallery(index);
+        startGallery();
+      });
+      elements.galleryDots.appendChild(dot);
+    });
+  }
+
+  if (elements.galleryPrev) {
+    elements.galleryPrev.addEventListener("click", () => {
+      renderGallery(galleryIndex - 1);
+      startGallery();
+    });
+  }
+
+  if (elements.galleryNext) {
+    elements.galleryNext.addEventListener("click", () => {
+      renderGallery(galleryIndex + 1);
+      startGallery();
+    });
+  }
+
+  renderGallery(0);
+  startGallery();
+};
+
+const loadGallery = async () => {
+  try {
+    if (API_BASE) {
+      const response = await fetch(`${API_BASE}/api/gallery`);
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data) && data.length) return data;
+      }
+    }
+
+    const response = await fetch("/api/gallery");
+    if (response.ok) {
+      const data = await response.json();
+      if (Array.isArray(data) && data.length) return data;
+    }
+  } catch (_) {
+    // fallback below
+  }
+  return DEFAULT_GALLERY_IMAGES;
+};
+
+const mountGallerySlides = (images) => {
+  if (!elements.galleryTrack) return;
+  elements.galleryTrack.innerHTML = "";
+  images.forEach((image, index) => {
+    const slide = document.createElement("img");
+    slide.className = `gallery-slide${index === 0 ? " active" : ""}`;
+    slide.src = image.image_url;
+    slide.alt = image.alt_text || "Campus gallery image";
+    elements.galleryTrack.appendChild(slide);
+  });
+  elements.gallerySlides = Array.from(document.querySelectorAll(".gallery-slide"));
 };
 
 const normalizeDateString = (dateString) => {
@@ -177,6 +301,10 @@ const loadEvents = async () => {
 
 const init = async () => {
   try {
+    const galleryImages = await loadGallery();
+    mountGallerySlides(galleryImages);
+    initGallery();
+
     const data = await loadEvents();
 
     const events = data
