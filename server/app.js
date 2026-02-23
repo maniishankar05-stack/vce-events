@@ -61,6 +61,10 @@ const normalizeEventDate = (event) => ({
   date: normalizeDateInput(event.date),
 });
 
+const cleanupPastEvents = async () => {
+  await pool.query("DELETE FROM events WHERE date < CURRENT_DATE");
+};
+
 const requireAuth = (req, res, next) => {
   if (!req.session.clubId) {
     return res.status(401).json({ error: "Unauthorized" });
@@ -103,10 +107,12 @@ app.get("/api/me", async (req, res) => {
 });
 
 app.get("/api/events", async (req, res) => {
+  await cleanupPastEvents();
   const result = await pool.query(
     `SELECT events.*, clubs.name as club_name
      FROM events
      JOIN clubs ON clubs.id = events.club_id
+     WHERE events.date >= CURRENT_DATE
      ORDER BY date ASC`
   );
   res.json(result.rows.map(normalizeEventDate));
@@ -123,10 +129,12 @@ app.get("/api/gallery", async (_req, res) => {
 });
 
 app.get("/api/events/mine", requireAuth, async (req, res) => {
+  await cleanupPastEvents();
   const result = await pool.query(
     `SELECT events.*
      FROM events
      WHERE club_id = $1
+       AND date >= CURRENT_DATE
      ORDER BY date ASC`,
     [req.session.clubId]
   );

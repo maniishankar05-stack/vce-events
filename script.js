@@ -171,6 +171,14 @@ const formatMonth = (dateString) => {
 
 const toMonthKey = (dateString) => dateString.slice(0, 7);
 
+const isUpcomingEvent = (event) => {
+  const normalized = normalizeDateString(event.date);
+  const eventDate = new Date(`${normalized}T00:00:00`);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return !Number.isNaN(eventDate.getTime()) && eventDate >= today;
+};
+
 const renderCard = (event) => {
   const card = document.createElement("article");
   card.className = "event-card";
@@ -309,6 +317,7 @@ const init = async () => {
 
     const events = data
       .map((event) => ({ ...event }))
+      .filter((event) => isUpcomingEvent(event))
       .sort((a, b) =>
         normalizeDateString(a.date).localeCompare(normalizeDateString(b.date))
       );
